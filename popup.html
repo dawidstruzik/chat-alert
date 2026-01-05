@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      color: #333;
+      background: #fff;
+    }
+
+    /* Header */
+    .header {
+      padding: 16px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .header h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* Status Section */
+    .status-section {
+      padding: 16px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .status-card {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .status-card.monitoring {
+      background: #e8f5e9;
+    }
+
+    .status-card.not-monitoring {
+      background: #f5f5f5;
+    }
+
+    .status-card.not-chatgpt {
+      background: #fff3e0;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .monitoring .status-dot {
+      background: #4CAF50;
+    }
+
+    .not-monitoring .status-dot {
+      background: #9e9e9e;
+    }
+
+    .not-chatgpt .status-dot {
+      background: #ff9800;
+    }
+
+    .status-text {
+      font-weight: 500;
+    }
+
+    .monitoring .status-text {
+      color: #2e7d32;
+    }
+
+    .not-monitoring .status-text {
+      color: #666;
+    }
+
+    .not-chatgpt .status-text {
+      color: #e65100;
+    }
+
+    .status-btn {
+      width: 100%;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    .status-btn.enable {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .status-btn.enable:hover {
+      background: #43a047;
+    }
+
+    .status-btn.disable {
+      background: #f5f5f5;
+      color: #666;
+      border: 1px solid #ddd;
+    }
+
+    .status-btn.disable:hover {
+      background: #eee;
+    }
+
+    .status-btn:disabled {
+      background: #e0e0e0;
+      color: #999;
+      cursor: not-allowed;
+      border: none;
+    }
+
+    /* Settings Sections */
+    .settings-section {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .settings-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-header {
+      font-size: 11px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .setting-card {
+      background: #f8f8f8;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    /* Setting Row */
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 32px;
+    }
+
+    .setting-row + .setting-row {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #eee;
+    }
+
+    .setting-label {
+      color: #333;
+    }
+
+    /* Toggle Switch */
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-track {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #ccc;
+      border-radius: 22px;
+      transition: background 0.2s;
+    }
+
+    .toggle-track::before {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle input:checked + .toggle-track {
+      background: #4CAF50;
+    }
+
+    .toggle input:checked + .toggle-track::before {
+      transform: translateX(18px);
+    }
+
+    /* Volume Control */
+    .volume-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #eee;
+    }
+
+    .volume-row.hidden {
+      display: none;
+    }
+
+    .volume-label {
+      font-size: 12px;
+      color: #666;
+      width: 50px;
+    }
+
+    .volume-slider {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      background: #ddd;
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #4CAF50;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .volume-value {
+      font-size: 12px;
+      color: #666;
+      width: 32px;
+      text-align: right;
+    }
+
+    /* Select Dropdown */
+    .setting-select {
+      padding: 6px 8px;
+      font-size: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      color: #333;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .setting-select:focus {
+      border-color: #4CAF50;
+    }
+
+    /* Segmented Control */
+    .segmented-control {
+      display: flex;
+      background: #e0e0e0;
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .segment {
+      flex: 1;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.15s;
+    }
+
+    .segment:hover {
+      color: #333;
+    }
+
+    .segment.active {
+      background: white;
+      color: #333;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Badge Preview */
+    .badge-hint {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+
+    .badge-options {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .badge-option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      background: transparent;
+      transition: all 0.15s;
+    }
+
+    .badge-option:hover {
+      background: #f0f0f0;
+    }
+
+    .badge-option.active {
+      border-color: #4CAF50;
+      background: #f0f9f0;
+    }
+
+    .badge-preview {
+      width: 36px;
+      height: 36px;
+      background: #666;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      position: relative;
+    }
+
+    .badge-preview-badge {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      background: #4CAF50;
+      color: white;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 4px;
+      border-radius: 4px;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .badge-preview-badge.alert {
+      background: #2196F3;
+    }
+
+    .badge-preview-badge.none {
+      display: none;
+    }
+
+    .badge-option-label {
+      font-size: 11px;
+      color: #666;
+    }
+
+    /* Dark Mode */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1a1a1a;
+        color: #e0e0e0;
+      }
+
+      .header {
+        border-bottom-color: #333;
+      }
+
+      .header h1 {
+        color: #e0e0e0;
+      }
+
+      .status-section {
+        border-bottom-color: #333;
+      }
+
+      .status-card.monitoring {
+        background: #1b3d1b;
+      }
+
+      .status-card.not-monitoring {
+        background: #2a2a2a;
+      }
+
+      .status-card.not-chatgpt {
+        background: #3d2a1a;
+      }
+
+      .monitoring .status-text {
+        color: #81c784;
+      }
+
+      .not-monitoring .status-text {
+        color: #999;
+      }
+
+      .not-chatgpt .status-text {
+        color: #ffb74d;
+      }
+
+      .status-btn.enable {
+        background: #4CAF50;
+      }
+
+      .status-btn.disable {
+        background: #2a2a2a;
+        color: #999;
+        border-color: #444;
+      }
+
+      .status-btn.disable:hover {
+        background: #333;
+      }
+
+      .status-btn:disabled {
+        background: #2a2a2a;
+        color: #666;
+      }
+
+      .settings-section {
+        border-bottom-color: #333;
+      }
+
+      .section-header {
+        color: #777;
+      }
+
+      .setting-card {
+        background: #252525;
+      }
+
+      .setting-row + .setting-row {
+        border-top-color: #333;
+      }
+
+      .setting-label {
+        color: #e0e0e0;
+      }
+
+      .toggle-track {
+        background: #444;
+      }
+
+      .volume-row {
+        border-top-color: #333;
+      }
+
+      .volume-label,
+      .volume-value {
+        color: #999;
+      }
+
+      .volume-slider {
+        background: #444;
+      }
+
+      .setting-select {
+        background: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+      }
+
+      .segmented-control {
+        background: #333;
+      }
+
+      .segment {
+        color: #999;
+      }
+
+      .segment:hover {
+        color: #e0e0e0;
+      }
+
+      .segment.active {
+        background: #444;
+        color: #e0e0e0;
+      }
+
+      .badge-hint {
+        color: #777;
+      }
+
+      .badge-option:hover {
+        background: #2a2a2a;
+      }
+
+      .badge-option.active {
+        border-color: #4CAF50;
+        background: #1b3d1b;
+      }
+
+      .badge-option-label {
+        color: #999;
+      }
+
+      .badge-preview {
+        background: #444;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>ChatGPT Notifier</h1>
+  </div>
+
+  <!-- Status Section -->
+  <div class="status-section">
+    <div id="status-card" class="status-card not-monitoring">
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span id="status-text" class="status-text">Loading...</span>
+      </div>
+    </div>
+    <button id="status-btn" class="status-btn enable" disabled>Loading...</button>
+  </div>
+
+  <!-- Alerts Section -->
+  <div class="settings-section">
+    <div class="section-header">Alerts</div>
+    <div class="setting-card">
+      <div class="setting-row">
+        <span class="setting-label">Sound</span>
+        <label class="toggle">
+          <input type="checkbox" id="sound-toggle">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="volume-row" id="volume-row">
+        <span class="volume-label">Volume</span>
+        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="50">
+        <span class="volume-value" id="volume-value">50%</span>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Notifications</span>
+        <label class="toggle">
+          <input type="checkbox" id="notifications-toggle">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Preview</span>
+        <select class="setting-select" id="preview-select">
+          <option value="0">None</option>
+          <option value="50">50 chars</option>
+          <option value="100">100 chars</option>
+          <option value="200">200 chars</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Behavior Section -->
+  <div class="settings-section">
+    <div class="section-header">Behavior</div>
+    <div class="setting-card">
+      <div class="setting-row">
+        <span class="setting-label">Auto-monitor tabs</span>
+        <label class="toggle">
+          <input type="checkbox" id="auto-enable-toggle">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Detection delay</span>
+        <select class="setting-select" id="delay-select">
+          <option value="500">0.5s</option>
+          <option value="1000">1s</option>
+          <option value="1500">1.5s</option>
+          <option value="2000">2s</option>
+          <option value="3000">3s</option>
+          <option value="5000">5s</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Badge Section -->
+  <div class="settings-section">
+    <div class="section-header">Badge</div>
+    <div class="setting-card">
+      <div class="badge-hint">What shows on the extension icon:</div>
+      <div class="badge-options" id="badge-options">
+        <div class="badge-option active" data-value="duration">
+          <div class="badge-preview">
+            <span class="badge-preview-badge">45s</span>
+          </div>
+          <span class="badge-option-label">Duration</span>
+        </div>
+        <div class="badge-option" data-value="on">
+          <div class="badge-preview">
+            <span class="badge-preview-badge alert">!</span>
+          </div>
+          <span class="badge-option-label">Indicator</span>
+        </div>
+        <div class="badge-option" data-value="none">
+          <div class="badge-preview">
+            <span class="badge-preview-badge none"></span>
+          </div>
+          <span class="badge-option-label">Nothing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
