@@ -4,12 +4,12 @@ Chrome extension that notifies you when ChatGPT finishes generating a response. 
 
 ## Features
 
-- **Sound alert** when response completes
-- **Desktop notifications** with response preview
-- **Auto-monitoring** - automatically watches ChatGPT tabs
-- **Badge indicator** showing generation duration
-- **Dark mode** support (follows system theme)
-- **Configurable** - adjust volume, preview length, detection timing
+- 🔔 **Sound alert** when response completes
+- 💬 **Desktop notifications** with response preview
+- ⚡ **Auto-monitoring** - automatically watches ChatGPT tabs
+- ⏱️ **Badge indicator** showing generation duration
+- 🌙 **Dark mode** support (follows system theme)
+- ⚙️ **Configurable** - adjust volume, preview length, detection timing
 
 ## Installation
 
@@ -45,7 +45,3 @@ This extension:
 - Does not collect or transmit any data
 - Only activates on `chatgpt.com` and `chat.openai.com`
 - Source code is fully available for review
-
-## License
-
-MIT
