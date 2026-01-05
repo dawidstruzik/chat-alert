@@ -1,6 +1,6 @@
 # ChatGPT Completion Notifier
 
-Chrome extension that monitors ChatGPT tabs and sends notifications when AI response generation completes.
+Chrome extension that monitors ChatGPT tabs (popup dashboard + active-session badge) and sends notifications when AI response generation completes.
 
 ## Development
 

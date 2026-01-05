@@ -3,7 +3,8 @@
 
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === 'PLAY_SOUND') {
-    const audio = new Audio('sounds/done.mp3');
+    const soundFile = message.sound || 'chime';
+    const audio = new Audio(`sounds/${soundFile}.mp3`);
     // Apply volume from settings (0.0 - 1.0)
     if (typeof message.volume === 'number') {
       audio.volume = Math.max(0, Math.min(1, message.volume));

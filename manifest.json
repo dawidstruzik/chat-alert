@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ChatGPT Completion Notifier",
   "version": "1.0.0",
-  "description": "Get notified when ChatGPT finishes generating a response",
+  "description": "Monitor ChatGPT tabs and get notified when responses finish generating",
   "permissions": [
     "notifications",
     "storage",
@@ -17,6 +17,15 @@
     "service_worker": "background.js"
   },
   "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": ["inject.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
     {
       "matches": [
         "https://chatgpt.com/*",
