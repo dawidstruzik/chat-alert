@@ -19,6 +19,8 @@ Chrome extension that notifies you when ChatGPT finishes generating a response. 
 4. Click "Load unpacked" and select the extension folder
 5. Open [ChatGPT](https://chatgpt.com) - monitoring starts automatically
 
+> **macOS users:** Make sure Chrome notifications are enabled in System Settings → Notifications → Google Chrome
+
 ## How It Works
 
 The extension watches for ChatGPT's "Stop" button. When it disappears and the response text stabilizes (configurable delay), you get notified. Works with both regular ChatGPT and Pro models that have extended thinking phases.
